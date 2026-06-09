@@ -164,7 +164,7 @@ The codebase follows a clear separation of concerns:
 - utils/ — pure helper functions with no side effects
 
 ### API Communication
-All HTTP calls go through src/services/api.js using the native Fetch API. The Vite dev server proxies /api/* to http://localhost:3001, avoiding CORS issues during development.
+All HTTP calls go through src/services/api.js using the native Fetch API. The Vite dev server proxies /api/ to http://localhost:3001, avoiding CORS issues during development.
 
 ### Role Guards
 Route protection is enforced at two levels:
