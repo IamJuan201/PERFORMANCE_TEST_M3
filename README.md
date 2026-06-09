@@ -1,97 +1,175 @@
-# SpaceBook - Workspace Reservation System
+# **Workspace Reservation System SPA**
+
+### Link Github: 
+### Link Github: https://github.com/IamJuan201/PERFORMANCE_TEST_M3.git
+
+A Single Page Application for managing internal company projects, built with Vanilla JavaScript and Vite. Features role based access control, persistent sessions and a simulated REST API via json-server.
+
+---
 
 ## Description
 
-SpaceBook is a Single Page Application (SPA) for managing workspace reservations. Employees can book shared spaces such as meeting rooms, private offices, coworking areas, and auditoriums. Administrators can manage all reservations and spaces.
+ProjectFlow allows a company's internal teams to manage projects efficiently. It provides two user roles: **Manager** and **Collaborator** each with specific permissions. The app features full CRUD operations, session persistence and SPA navigation without page reloads.
 
-## Technologies Used
+---
 
-- Vite
-- Vanilla JavaScript (ES Modules)
-- Tailwind CSS v4
-- json-server (mock REST API)
-- concurrently
+## Technologies
+
+| Technology | Purpose |
+|---|---|
+| Vite 5 | Build tool and dev server |
+| Vanilla JavaScript | Core application logic |
+| json-server | Simulated REST API |
+| CSS Custom Properties | Theming and design system |
+| localStorage | Session persistence |
+
+---
 
 ## Installation
 
+### Prerequisites
+- Node.js 18+ installed
+- npm 9+
+
+### Steps
+
 ```bash
+# 1. Unzip the project and enter the folder
+cd project-manager
+
+# 2. Install dependencies
 npm install
 ```
 
+---
+
 ## Running the Project
+
+You need two terminals to running simultaneously.
+
+### Terminal 1 — Start JSON Server (API)
+
+```bash
+npm run server
+```
+
+The API will be available at: `http://localhost:3001`
+
+### Terminal 2 — Start Vite Dev Server (Frontend)
 
 ```bash
 npm run dev
 ```
 
-This command runs Vite and json-server at the same time using concurrently.
+The application will be available at: `http://localhost:5173`
 
-- Frontend: http://localhost:5173
-- API: http://localhost:3001
+---
 
-## Running json-server Only
+## Running JSON Server
 
 ```bash
-npx json-server --watch db.json --port 3001
+npm run server
+# Starts json-server watching db.json on port 3001
 ```
+
+Available endpoints:
+- `GET /users` — list users
+- `GET /projects` — list projects
+- `POST /projects` — create project
+- `PATCH /projects/:id` — update project
+- `DELETE /projects/:id` — delete project
+
+---
 
 ## Test Users
 
-| Name           | Email           | Password  | Role  |
-|----------------|-----------------|-----------|-------|
-| Administrador  | admin@test.com  | Admin123* | admin |
-| Usuario One    | user@test.com   | User123*  | user  |
-| Usuario Two    | user2@test.com  | User123*  | user  |
+Both accounts are pre-loaded in db.json. No registration is required.
+
+| Role | Email | Password |
+|---|---|---|
+| Manager | manager@test.com | 123456 |
+| Collaborator | user@test.com | 123456 |
+
+---
 
 ## Project Structure
 
 ```
-src/
-  api/
-    http.js               - Base fetch wrapper for HTTP requests
-  components/
-    ReservationCard.js    - Card component for a single reservation
-    ReservationModal.js   - Modal form to create or edit a reservation
-    Sidebar.js            - Navigation sidebar with logout
-  controllers/
-    admin.controller.js   - Logic for the admin panel
-    home.controller.js    - Logic for the user dashboard
-    login.controller.js   - Logic for the login form
-  router/
-    router.js             - SPA routing with authentication and role guards
-  services/
-    auth.service.js       - API calls for authentication
-    reservation.service.js - API calls for reservations (CRUD)
-    space.service.js      - API calls for spaces (CRUD)
-  utils.js                - Session helpers (save, get, remove, isAuthenticated, isAdmin)
-  views/
-    adminView.js          - Admin dashboard view
-    homeView.js           - User dashboard view
-    loginView.js          - Login page view
-    notFound.js           - 404 page view
-  main.js                 - App entry point
-  style.css               - Tailwind CSS import
-db.json                   - json-server database
+project-manager/
+├── index.html                      
+├── vite.config.js
+├── main.js                  
+├── package.json
+├── db.json                       
+└── src/
+    ├── main.js                     
+    ├── router.js                   
+    ├── styles/
+    │   └── main.css                
+    ├── services/
+    │   ├── reservation.service.js 
+    ├── components/
+    │   ├── ReservationCard.js         
+    │   └── Sidebar.js                  
+    └── views/
+        ├── homeView.js           
+        ├── loginView.js        
+        ├── notFound.js         
+        └── utils.js            
 ```
+
+---
 
 ## Role Permissions
 
-### Admin
-- View all reservations
-- Create, edit, and delete any reservation
-- Approve or reject pending reservations
-- Create, edit, and delete spaces
+### Manager
+| Feature | Permission |
+|---|---|
+| View all projects | Yes |
+| Create projects | Yes |
+| Edit any project | Yes |
+| Delete any project | Yes |
+| View project details | Yes |
+| Access /projects route | Yes |
 
-### User
-- View only their own reservations
-- Create new reservations
-- Edit their own pending reservations
-- Cancel their own reservations (pending or approved)
+### Collaborator
+| Feature | Permission |
+|---|---|
+| View assigned projects only | Yes |
+| View project details (own only) | Yes |
+| Update status of own projects | Yes |
+| Create projects | No |
+| Edit other fields | No |
+| Delete projects | No |
+| Access /projects route | No (redirected to dashboard) |
+
+---
 
 ## Technical Decisions
 
-- **Hash-free routing**: Uses the History API (`pushState`) for clean URLs. Route guards redirect unauthenticated users to `/` and unauthorized users to an access denied screen.
-- **Session storage**: User data is stored in `localStorage` under the key `session_user`. This keeps the session alive on page refresh and is cleared on logout.
-- **Modular architecture**: Each concern (view, controller, service, component) lives in its own file. Views return HTML strings. Controllers attach event listeners after the DOM is ready using `setTimeout`.
-- **Role-based rendering**: The router checks the user role before rendering protected routes. The sidebar and reservation cards also adapt their content based on the role.
-- **No duplicate reservations**: Validation prevents booking the same space in an overlapping time slot on the same date (basic check on end time vs start time).
+### SPA Routing
+Uses the browser's History API (history.pushState and the popstate event) for navigation without page reloads. A central router.js maps URL paths to render functions and enforces authentication and authorization guards.
+
+### Session Persistence
+User session is stored in localStorage after login, with the password field excluded before saving. This keeps the user authenticated across page refreshes and browser restarts. Logout clears the stored key and redirects to the login page.
+
+### Path Aliases
+Vite is configured with path aliases to keep imports clean and avoid deeply nested relative paths across modules.
+
+### Modularization
+The codebase follows a clear separation of concerns:
+- services/ — all data fetching and auth logic
+- pages/ — page-level render functions
+- components/ — reusable UI pieces such as the sidebar and modals
+- utils/ — pure helper functions with no side effects
+
+### API Communication
+All HTTP calls go through src/services/api.js using the native Fetch API. The Vite dev server proxies /api/* to http://localhost:3001, avoiding CORS issues during development.
+
+### Role Guards
+Route protection is enforced at two levels:
+1. **Router level**: unauthenticated users are redirected to /login; authenticated users visiting /login are redirected to /dashboard.
+2. **Page level**: collaborators visiting /projects are redirected to /dashboard; collaborators requesting project details that do not belong to them receive a permission error.
+
+### Design System
+All colors, spacing, and typography are managed through CSS Custom Properties in main.css, providing consistent theming without relying on an external CSS framework.
