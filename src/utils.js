@@ -1,18 +1,13 @@
 export const saveSession = (user) => {
-  localStorage.setItem(
-    "user",
-    JSON.stringify(user)
-  );
+  localStorage.setItem("session_user", JSON.stringify(user));
 };
 
 export const getSession = () => {
-  return JSON.parse(
-    localStorage.getItem("user")
-  );
+  return JSON.parse(localStorage.getItem("session_user"));
 };
 
 export const removeSession = () => {
-  localStorage.removeItem("user");
+  localStorage.removeItem("session_user");
 };
 
 export const isAuthenticated = () => {
